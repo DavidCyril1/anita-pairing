@@ -1,0 +1,22 @@
+{
+    "name": "Wally Session Generator",
+    "description": "I'm Web Session Generator by wally jay tech",
+    "logo": "https://i.ibb.co/TLG3Mb4/photo-2024-11-01-16-00-22.jpg",
+    "repository": "https://github.com/wallyjaytechh/WALLYJAYTECH-MD",
+    "keywords": ["@wallyjaytechh"],
+    "success_url": "/", 
+    "buildpacks": [{ "url": "https://github.com/heroku/heroku-buildpack-nodejs#latest" } ],
+    "env": {      
+      "PORT": {
+        "description": "Port for web app.4000,5000,3000... any!",
+        "value": "5000",
+        "required": false 
+      },
+      "MESSAGE": {
+        "description": "",
+        "value": "",
+        "required": false 
+      }
+    }   
+
+}
