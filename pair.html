@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,31 +18,30 @@
       font-family: Arial, sans-serif;
     }
 
-    .matrix {
+    .rain {
       position: absolute;
-      width: 100%;
+      width: 1px;
       height: 100%;
+      background: transparent;
       overflow: hidden;
       z-index: -1;
-      color: rgba(0, 255, 0, 0.5);
-      font-size: 20px;
-      font-family: monospace;
     }
 
-    .matrix div {
+    .rain:before {
+      content: '';
       position: absolute;
-      width: 20px;
-      height: 100%;
-      top: 0;
-      animation: matrix-fall linear infinite;
+      top: -100%;
+      left: 50%;
+      width: 2px;
+      height: 30%;
+      background: rgba(255, 255, 255, 0.5);
+      box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+      animation: rain 0.5s linear infinite;
     }
 
-    @keyframes matrix-fall {
-      0% {
-        top: -100%;
-      }
-      100% {
-        top: 100%;
+    @keyframes rain {
+      to {
+        transform: translateY(100vh);
       }
     }
 
@@ -62,6 +62,7 @@
       border-radius: 10px;
       transform: perspective(1000px) rotateY(0deg);
       box-shadow: 0 0 20px rgba(250, 249, 249, 0.7);
+      position: relative;
     }
 
     #text {
@@ -166,19 +167,19 @@
   </style>
 </head>
 <body>
-  <div class="matrix"></div>
+  <div class="rain"></div>
   <div class="container">
     <div class="main">
       <div class="box" id="box">
         <div id="text">
           <i class="fa fa-user"></i>
           <p>
-            <h3 class="centered-text">WALLYJAYTECH-MD PAIRING CODE</h3>
+            <h3 class="centered-text">WALLYJAYTECH-MD PAIR CODE 🖤</h3>
             <br>
-            <h6>Made By Wally Jay Tech⚡.</h6>
-            <h6>Enter Your Number Starting with Country Code.</h6>
+            <h6>Made By WALLYJAYTECH-MD.</h6>
+            <h6>Enter Your Number with Country Code.</h6>
             <div class="input-container">
-              <input placeholder="234814431xxxx" type="number" id="number" placeholder="Enter your Phone Number Starting with Country Code" name="">
+              <input placeholder="234814431xxxx" type="number" id="number" placeholder="Enter your Phone Pumber with Cuntry Code" name="">
               <button id="submit">Submit</button>
             </div>
             
@@ -196,6 +197,7 @@
     let a = document.getElementById("pair");
     let b = document.getElementById("submit");
     let c = document.getElementById("number");
+    let box = document.getElementById("box");
 
     async function Copy() {
       let text = document.getElementById("copy").innerText;
@@ -206,7 +208,7 @@
       obj.size = "5";
       setTimeout(() => {
         obj.innerText = text;
-        obj.style = "color:white;font-weight:bold";
+        obj.style = "color:white;font-weight-bold";
         obj.size = "5";
       }, 500);
     }
@@ -242,24 +244,17 @@
       }
     });
 
-    function createMatrix() {
-      const matrixContainer = document.querySelector('.matrix');
-      const columns = Math.floor(window.innerWidth / 20);
-      for (let i = 0; i < columns; i++) {
-        const column = document.createElement('div');
-        column.style.left = `${i * 20}px`;
-        column.style.animationDuration = `${Math.random() * 5 + 2}s`;
-        matrixContainer.appendChild(column);
-
-        for (let j = 0; j < 30; j++) {
-          const char = document.createElement('span');
-          char.innerText = String.fromCharCode(0x30A0 + Math.random() * 96);
-          column.appendChild(char);
-        }
+    function createRain() {
+      const rain = document.querySelector('.rain');
+      for (let i = 0; i < 100; i++) {
+        const drop = document.createElement('div');
+        drop.style.left = `${Math.random() * 100}vw`;
+        drop.style.animationDelay = `${Math.random() * 2}s`;
+        rain.appendChild(drop);
       }
     }
 
-    createMatrix();
+    createRain();
   </script>
 </body>
 </html>
