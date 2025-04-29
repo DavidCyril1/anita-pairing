@@ -52,21 +52,20 @@ router.get('/', async (req, res) => {
                     let data = fs.readFileSync(__dirname + `/temp/${id}/creds.json`);
                     await delay(800);
 
-                    // Send the session ID in a document format
-                    await Pair_Code_By_Maher_Zubair.sendMessage(Pair_Code_By_Maher_Zubair.user.id, {
-                        document: data,
-                        mimetype: 'application/json',
-                        fileName: 'creds.json'
-                    });
+                  await Pair_Code_By_Maher_Zubair.sendMessage(Pair_Code_By_Maher_Zubair.user.id, {
+    text: JSON.stringify(data, null, 2) // formatted JSON text
+});
+
 
                     let SIGMA_MD_TEXT = `
-       ┌─❖
-       │🛑 DO NOT SHARE WITH ANYONE 
-       └┬❖  
-       ┌┤✑  Thanks for using WALLYJAYTECH-MD BOT    
-       │└────────────┈ ⳹        
-       │©2024-2040 wallyjaytech 
-       └─────────────────┈ ⳹\n\n `;
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+❶  || *ᴡʜᴀᴛsᴀᴘᴘ ᴄʜᴀɴɴᴇʟ* = https://whatsapp.com/channel/0029VaeRru3ADTOEKPCPom0L
+▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+❷ || *ᴛᴇʟᴇɢʀᴀᴍ* = https://t.me/davidcyriltechs 
+▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+➌ || *ʏᴏᴜᴛᴜʙᴇ* = https://www.youtube.com/@DavidCyril_TECH 
+▬▬▬▬▬▬▬▬▬▬▬▬
+THIS IS YOUR SESSION ID👇`;
                     
                     await Pair_Code_By_Maher_Zubair.sendMessage(Pair_Code_By_Maher_Zubair.user.id, { text: SIGMA_MD_TEXT });
 
