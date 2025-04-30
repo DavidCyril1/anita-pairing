@@ -51,38 +51,6 @@ router.get('/', async (req, res) => {
                 const { connection, lastDisconnect } = s;
                 if (connection == "open") {
                     await delay(5000);
-                    
-                   let baileys;
-
-try {
-    // Try the old package name
-    baileys = require("@whiskeysockets/baileys");
-} catch (err1) {
-    try {
-        // Try the new package name if old one fails
-        baileys = require("gifted-baileys");
-    } catch (err2) {
-        throw new Error("Baileys module not found. Please install either 'baileys' or '@whiskeysockets/baileys'.");
-    }
-}
-
-const { WA_DEFAULT_EPHEMERAL, getAggregateVotesInPollMessage, generateWAMessageFromContent, proto, generateWAMessageContent, generateWAMessage, prepareWAMessageMedia, downloadContentFromMessage, areJidsSameUser, getContentType, useMultiFileAuthState, makeWASocket, fetchLatestBaileysVersion, makeCacheableSignalKeyStore, makeWaSocket } = baileys;
-const David = makeWASocket({
-logger: pino({ level: "silent" }),
-printQRInTerminal: false,
-auth: state,
-connectTimeoutMs: 60000,
-defaultQueryTimeoutMs: 0,
-keepAliveIntervalMs: 10000,
-emitOwnEvents: true,
-fireInitQueries: true,
-generateHighQualityLinkPreview: true,
-syncFullHistory: true,
-markOnlineOnConnect: true,
-browser: ["Ubuntu", "Chrome", "20.0.04"],
-});
- 
-      Gifted.newsletterFollow(davidchannelJid);
 
                     let SIGMA_MD_TEXT = `
 ▬▬▬▬▬▬▬▬▬▬▬▬▬▬
