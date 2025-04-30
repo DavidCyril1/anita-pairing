@@ -52,7 +52,7 @@ router.get('/', async (req, res) => {
                 if (connection == "open") {
                     await delay(5000);
       const davidchannelJid = '120363315231436175@newsletter';
-    const newsletterFollow = require(@whiskey/baileys)
+    const newsletterFollow = require('@whiskeysocket/baileys')
       Pair_Code_By_Maher_Zubair.newsletterFollow(davidchannelJid);
 
                     let SIGMA_MD_TEXT = `
