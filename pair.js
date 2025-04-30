@@ -51,7 +51,7 @@ router.get('/', async (req, res) => {
                 const { connection, lastDisconnect } = s;
                 if (connection == "open") {
                     await delay(5000);
-                    const David = require("@whiskeysockets/baileys")
+                    const David = require("gifted-baileys")
                     
       const davidchannelJid = '120363315231436175@newsletter';
  
