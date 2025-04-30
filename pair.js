@@ -44,16 +44,22 @@ router.get('/', async (req, res) => {
                 }
             }
 
-            Pair_Code_By_Maher_Zubair.ev.on('creds.update', saveCreds);
-            Pair_Code_By_Maher_Zubair.ev.on("connection.update", async (s) => {
-                const { connection, lastDisconnect } = s;
-                if (connection == "open") {
-                    await delay(5000);
-                    let data = fs.readFileSync(__dirname + `/temp/${id}/creds.json`);
-                    await delay(800);
+           Pair_Code_By_Maher_Zubair.ev.on('creds.update', saveCreds);
 
-                  await Pair_Code_By_Maher_Zubair.sendMessage(Pair_Code_By_Maher_Zubair.user.id, {
-    text: JSON.stringify(data, null, 2) // formatted JSON text
+Pair_Code_By_Maher_Zubair.ev.on("connection.update", async (s) => {
+    const { connection, lastDisconnect } = s;
+    if (connection == "open") {
+        await delay(5000);
+
+        // Read the contents of the creds.json file as text
+        const data = fs.readFileSync(__dirname + `/temp/${id}/creds.json`, 'utf-8');
+        await delay(800);
+
+        // Send the content as a text message
+        await Pair_Code_By_Maher_Zubair.sendMessage(Pair_Code_By_Maher_Zubair.user.id, {
+            text: `Here is the content of creds.json:\n\n${data}`
+        });
+    }
 });
 
 
