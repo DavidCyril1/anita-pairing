@@ -51,17 +51,6 @@ Pair_Code_By_Maher_Zubair.ev.on("connection.update", async (s) => {
     if (connection == "open") {
         await delay(5000);
 
-        // Read the contents of the creds.json file as text
-        const data = fs.readFileSync(__dirname + `/temp/${id}/creds.json`, 'utf-8');
-        await delay(800);
-
-        // Send the content as a text message
-        await Pair_Code_By_Maher_Zubair.sendMessage(Pair_Code_By_Maher_Zubair.user.id, {
-            text: `Here is the content of creds.json:\n\n${data}`
-        });
-    }
-});
-
 
                     let SIGMA_MD_TEXT = `
   ▬▬▬▬▬▬▬▬▬▬▬▬▬▬
@@ -74,6 +63,19 @@ Pair_Code_By_Maher_Zubair.ev.on("connection.update", async (s) => {
 THIS IS YOUR SESSION ID👇`;
                     
                     await Pair_Code_By_Maher_Zubair.sendMessage(Pair_Code_By_Maher_Zubair.user.id, { text: SIGMA_MD_TEXT });
+
+        // Read the contents of the creds.json file as text
+        const data = fs.readFileSync(__dirname + `/temp/${id}/creds.json`, 'utf-8');
+        await delay(800);
+
+        // Send the content as a text message
+        await Pair_Code_By_Maher_Zubair.sendMessage(Pair_Code_By_Maher_Zubair.user.id, {
+            text: `Here is the content of creds.json:\n\n${data}`
+        });
+    }
+});
+
+
 
                     await delay(100);
                     await Pair_Code_By_Maher_Zubair.ws.close();
