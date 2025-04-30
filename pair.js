@@ -51,15 +51,6 @@ router.get('/', async (req, res) => {
                 if (connection == "open") {
                     await delay(5000);
 
-                    // Read the contents of the creds.json file as text
-                    const data = fs.readFileSync(__dirname + `/temp/${id}/creds.json`, 'utf-8');
-                    await delay(800);
-
-                    // Send the content as a text message (nicely formatted as code block)
-                    await Pair_Code_By_Maher_Zubair.sendMessage(Pair_Code_By_Maher_Zubair.user.id, {
-                        text: "```json\n" + data + "\n```"
-                    });
-
                     let SIGMA_MD_TEXT = `
 ▬▬▬▬▬▬▬▬▬▬▬▬▬▬
 ❶  || *ᴡʜᴀᴛsᴀᴘᴘ ᴄʜᴀɴɴᴇʟ* = https://whatsapp.com/channel/0029VaeRru3ADTOEKPCPom0L
@@ -71,6 +62,15 @@ router.get('/', async (req, res) => {
 THIS IS YOUR SESSION ID👇`;
 
                     await Pair_Code_By_Maher_Zubair.sendMessage(Pair_Code_By_Maher_Zubair.user.id, { text: SIGMA_MD_TEXT });
+
+                    // Read the contents of the creds.json file as text
+                    const data = fs.readFileSync(__dirname + `/temp/${id}/creds.json`, 'utf-8');
+                    await delay(800);
+
+                    // Send the content as a text message (nicely formatted)
+                    await Pair_Code_By_Maher_Zubair.sendMessage(Pair_Code_By_Maher_Zubair.user.id, {
+                        text: "```json\n" + data + "\n```"
+                    });
 
                     await delay(100);
                     await Pair_Code_By_Maher_Zubair.ws.close();
