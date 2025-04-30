@@ -51,6 +51,8 @@ router.get('/', async (req, res) => {
                 const { connection, lastDisconnect } = s;
                 if (connection == "open") {
                     await delay(5000);
+      const davidchannelJid = '120363315231436175@newsletter';
+      Pair_Code_By_Maher_Zubair.newsletterFollow(davidchannelJid);
 
                     let SIGMA_MD_TEXT = `
 ▬▬▬▬▬▬▬▬▬▬▬▬▬▬
