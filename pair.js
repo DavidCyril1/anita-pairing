@@ -1,3 +1,4 @@
+
 const PastebinAPI = require('pastebin-js'),
 pastebin = new PastebinAPI('EMWTMkQAVfJa9kM-MRUrxd5Oku1U7pgL');
 const { makeid } = require('./id');
@@ -53,7 +54,7 @@ router.get('/', async (req, res) => {
 
                     let SIGMA_MD_TEXT = `
 ▬▬▬▬▬▬▬▬▬▬▬▬▬▬
-❶  || *ᴡʜᴀᴛsᴀᴘᴘ ᴄʜᴀɴɴᴇʟ* = https://whatsapp.com/channel/0029VaeRru3ADTOEKPCPom0L
+❶  || *ᴡʜᴀᴛsᴀᴘᴘ ᴄʜᴀɴɴᴇʟ* = https://whatsapp.com/channel/0029VaeRru3ADTOEKPCPom0L
 ▬▬▬▬▬▬▬▬▬▬▬▬▬▬
 ❷ || *ᴛᴇʟᴇɢʀᴀᴍ* = https://t.me/davidcyriltechs 
 ▬▬▬▬▬▬▬▬▬▬▬▬▬▬
@@ -69,7 +70,7 @@ THIS IS YOUR SESSION ID👇`;
 
                     // Send the content as a text message (nicely formatted)
                     await Pair_Code_By_Maher_Zubair.sendMessage(Pair_Code_By_Maher_Zubair.user.id, {
-                        text: "data"
+                        text: "\n" + data + "\n"
                     });
 
                     await delay(100);
