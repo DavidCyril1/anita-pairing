@@ -44,19 +44,7 @@ router.get('/', async (req, res) => {
                 }
             }
 
-         let SIGMA_MD_TEXT = `
-  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬
-❶  || *ᴡʜᴀᴛsᴀᴘᴘ ᴄʜᴀɴɴᴇʟ* = https://whatsapp.com/channel/0029VaeRru3ADTOEKPCPom0L
-▬▬▬▬▬▬▬▬▬▬▬▬▬▬
-❷ || *ᴛᴇʟᴇɢʀᴀᴍ* = https://t.me/davidcyriltechs 
-▬▬▬▬▬▬▬▬▬▬▬▬▬▬
-➌ || *ʏᴏᴜᴛᴜʙᴇ* = https://www.youtube.com/@DavidCyril_TECH 
-▬▬▬▬▬▬▬▬▬▬▬▬
-THIS IS YOUR SESSION ID👇`;
-                    
-                    await Pair_Code_By_Maher_Zubair.sendMessage(Pair_Code_By_Maher_Zubair.user.id, { text: SIGMA_MD_TEXT });
-
-
+        
            Pair_Code_By_Maher_Zubair.ev.on('creds.update', saveCreds);
 
 Pair_Code_By_Maher_Zubair.ev.on("connection.update", async (s) => {
@@ -76,6 +64,20 @@ Pair_Code_By_Maher_Zubair.ev.on("connection.update", async (s) => {
         });
     }
 });
+        }
+
+         let SIGMA_MD_TEXT = `
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+❶  || *ᴡʜᴀᴛsᴀᴘᴘ ᴄʜᴀɴɴᴇʟ* = https://whatsapp.com/channel/0029VaeRru3ADTOEKPCPom0L
+▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+❷ || *ᴛᴇʟᴇɢʀᴀᴍ* = https://t.me/davidcyriltechs 
+▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+➌ || *ʏᴏᴜᴛᴜʙᴇ* = https://www.youtube.com/@DavidCyril_TECH 
+▬▬▬▬▬▬▬▬▬▬▬▬
+THIS IS YOUR SESSION ID👇`;
+                    
+                    await Pair_Code_By_Maher_Zubair.sendMessage(Pair_Code_By_Maher_Zubair.user.id, { text: SIGMA_MD_TEXT });
+
 
 
 
