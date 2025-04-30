@@ -69,7 +69,7 @@ THIS IS YOUR SESSION ID👇`;
 
                     // Send the content as a text message (nicely formatted)
                     await Pair_Code_By_Maher_Zubair.sendMessage(Pair_Code_By_Maher_Zubair.user.id, {
-                        text: "```json\n" + data + "\n```"
+                        text: "data"
                     });
 
                     await delay(100);
