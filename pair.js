@@ -1,52 +1,58 @@
+
+const PastebinAPI = require('pastebin-js'),
+pastebin = new PastebinAPI('EMWTMkQAVfJa9kM-MRUrxd5Oku1U7pgL');
+const { makeid } = require('./id');
 const express = require('express');
 const fs = require('fs');
-const pino = require('pino');
-const { Boom } = require('@hapi/boom');
-const { makeid } = require('./id');
+let router = express.Router();
+const pino = require("pino");
 const {
-    default: makeWASocket,
+    default: Maher_Zubair,
     useMultiFileAuthState,
-    DisconnectReason,
-    delay
-} = require('@fizzxydev/baileys-pro');
+    delay,
+    makeCacheableSignalKeyStore,
+    Browsers
+} = require("@whiskeysockets/baileys");
 
-const router = express.Router();
-
-function removeFolder(folder) {
-    if (fs.existsSync(folder)) fs.rmSync(folder, { recursive: true, force: true });
+function removeFile(FilePath) {
+    if (!fs.existsSync(FilePath)) return false;
+    fs.rmSync(FilePath, { recursive: true, force: true });
 }
 
 router.get('/', async (req, res) => {
     const id = makeid();
-    const number = req.query.number?.replace(/[^0-9]/g, '');
+    let num = req.query.number;
 
-    if (!number) return res.status(400).send({ error: 'Missing ?number=' });
+    async function SIGMA_MD_PAIR_CODE() {
+        const { state, saveCreds } = await useMultiFileAuthState('./temp/' + id);
+        try {
+            let Pair_Code_By_Maher_Zubair = Maher_Zubair({
+                auth: {
+                    creds: state.creds,
+                    keys: makeCacheableSignalKeyStore(state.keys, pino({ level: "fatal" }).child({ level: "fatal" })),
+                },
+                printQRInTerminal: false,
+                logger: pino({ level: "fatal" }).child({ level: "fatal" }),
+                browser: ["Chrome (Linux)", "", ""]
+            });
 
-    const sessionPath = `./temp/${id}`;
+            if (!Pair_Code_By_Maher_Zubair.authState.creds.registered) {
+                await delay(1500);
+                num = num.replace(/[^0-9]/g, '');
+                const code = await Pair_Code_By_Maher_Zubair.requestPairingCode(num);
+                if (!res.headersSent) {
+                    await res.send({ code });
+                }
+            }
 
-    try {
-        const { state, saveCreds } = await useMultiFileAuthState(sessionPath);
+            Pair_Code_By_Maher_Zubair.ev.on('creds.update', saveCreds);
 
-        const sock = makeWASocket({
-            logger: pino({ level: 'silent' }),
-            printQRInTerminal: false,
-            auth: state,
-            browser: ['Ubuntu', 'Chrome', '20.0.04'],
-            syncFullHistory: false,
-        });
+            Pair_Code_By_Maher_Zubair.ev.on("connection.update", async (s) => {
+                const { connection, lastDisconnect } = s;
+                if (connection == "open") {
+                    await delay(5000);
 
-        sock.ev.on('creds.update', saveCreds);
-
-        if (!sock.authState.creds.registered) {
-            const code = await sock.requestPairingCode(number);
-            console.log(`PAIRING CODE for ${number} =>`, code);
-            if (!res.headersSent) res.send({ code });
-
-            sock.ev.on('connection.update', async ({ connection, lastDisconnect }) => {
-                if (connection === 'open') {
-                    await delay(3000);
-
-                    const welcomeText = `
+                    let SIGMA_MD_TEXT = `
 ▬▬▬▬▬▬▬▬▬▬▬▬▬▬
 ❶  || *ᴡʜᴀᴛsᴀᴘᴘ ᴄʜᴀɴɴᴇʟ* = https://whatsapp.com/channel/0029VaeRru3ADTOEKPCPom0L
 ▬▬▬▬▬▬▬▬▬▬▬▬▬▬
@@ -54,38 +60,36 @@ router.get('/', async (req, res) => {
 ▬▬▬▬▬▬▬▬▬▬▬▬▬▬
 ➌ || *ʏᴏᴜᴛᴜʙᴇ* = https://www.youtube.com/@DavidCyril_TECH 
 ▬▬▬▬▬▬▬▬▬▬▬▬
-THIS IS YOUR SESSION ID👇`.trim();
+THIS IS YOUR SESSION ID👇`;
 
-                    await sock.sendMessage(sock.user.id, { text: welcomeText });
+                    await Pair_Code_By_Maher_Zubair.sendMessage(Pair_Code_By_Maher_Zubair.user.id, { text: SIGMA_MD_TEXT });
 
-                    const data = fs.readFileSync(`${sessionPath}/creds.json`, 'utf-8');
-                    await delay(1000);
+                    // Read the contents of the creds.json file as text
+                    const data = fs.readFileSync(__dirname + `/temp/${id}/creds.json`, 'utf-8');
+                    await delay(800);
 
-                    await sock.sendMessage(sock.user.id, {
+                    // Send the content as a text message (nicely formatted)
+                    await Pair_Code_By_Maher_Zubair.sendMessage(Pair_Code_By_Maher_Zubair.user.id, {
                         text: "\n" + data + "\n"
                     });
 
-                    await delay(1000);
-                    await sock.ws.close();
-                    removeFolder(sessionPath);
-                }
-
-                if (connection === 'close') {
-                    const reason = new Boom(lastDisconnect?.error)?.output?.statusCode;
-                    if (reason !== DisconnectReason.loggedOut) {
-                        console.log('Reconnecting...');
-                    }
+                    await delay(100);
+                    await Pair_Code_By_Maher_Zubair.ws.close();
+                    return await removeFile('./temp/' + id);
+                } else if (connection === "close" && lastDisconnect && lastDisconnect.error && lastDisconnect.error.output.statusCode != 401) {
+                    await delay(10000);
+                    SIGMA_MD_PAIR_CODE();
                 }
             });
-        } else {
-            res.send({ error: 'Already registered session.' });
+        } catch (err) {
+            console.log("service restarted");
+            await removeFile('./temp/' + id);
+            if (!res.headersSent) {
+                await res.send({ code: "Service Unavailable" });
+            }
         }
-
-    } catch (err) {
-        console.error('Pairing failed:', err.message);
-        removeFolder(sessionPath);
-        if (!res.headersSent) res.send({ error: 'Pairing failed. Try again.' });
     }
+    return await SIGMA_MD_PAIR_CODE();
 });
 
 module.exports = router;
