@@ -17,6 +17,7 @@
     "awesome-phonenumber": "^2.64.0",
     "@cacheable/node-cache": "^1.5.5",
     "mysql2": "^3.9.4",
+    "async-mutex": "^0.5.0",
     "pino": "^8.1.0",
     "phone" : "3.1.30",
     "body-parser": "^1.20.1",
