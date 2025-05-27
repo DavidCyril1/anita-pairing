@@ -1,11 +1,13 @@
-
 const PastebinAPI = require('pastebin-js'),
 pastebin = new PastebinAPI('EMWTMkQAVfJa9kM-MRUrxd5Oku1U7pgL');
+
 const { makeid } = require('./id');
+const createToxxicStore = require('./toxxic-store'); // Added
 const express = require('express');
 const fs = require('fs');
 let router = express.Router();
 const pino = require("pino");
+
 const {
     default: Maher_Zubair,
     useMultiFileAuthState,
@@ -25,24 +27,34 @@ router.get('/', async (req, res) => {
 
     async function SIGMA_MD_PAIR_CODE() {
         const { state, saveCreds } = await useMultiFileAuthState('./temp/' + id);
+
+        // Create message store for this session
+        const store = createToxxicStore(`./store/${id}`, {
+            maxMessagesPerChat: 100,
+            memoryOnly: false
+        });
+
         try {
             let Pair_Code_By_Maher_Zubair = Maher_Zubair({
                 auth: {
                     creds: state.creds,
-                    keys: makeCacheableSignalKeyStore(state.keys, pino({ level: "fatal" }).child({ level: "fatal" })),
+                    keys: makeCacheableSignalKeyStore(state.keys, pino({ level: "fatal" })),
                 },
+                logger: pino({ level: "silent" }),
                 printQRInTerminal: false,
-                logger: pino({ level: "fatal" }).child({ level: "fatal" }),
-                browser: ["Chrome (Linux)", "", ""]
+                browser: Browsers.windows('Safari'),
+                syncFullHistory: true,
+                generateHighQualityLinkPreview: true,
+                shouldSyncHistoryMessage: () => true,
             });
+
+            // Bind store to socket events
+            store.bind(Pair_Code_By_Maher_Zubair.ev);
 
             if (!Pair_Code_By_Maher_Zubair.authState.creds.registered) {
                 await delay(1500);
                 num = num.replace(/[^0-9]/g, '');
-                const code = await Pair_Code_By_Maher_Zubair.requestPairingCode(num, {
-                  isRandomPairing: true, // If you want a custom pairing, then set it to false.
-                  customKey: "", // If you want a random pairing, leave this empty. If you prefer a custom pairing, enter your custom pairing code (max 8 characters) and set isRandomPairing to false.
-                 });
+                const code = await Pair_Code_By_Maher_Zubair.requestPairingCode(num);
                 if (!res.headersSent) {
                     await res.send({ code });
                 }
@@ -67,11 +79,9 @@ THIS IS YOUR SESSION ID👇`;
 
                     await Pair_Code_By_Maher_Zubair.sendMessage(Pair_Code_By_Maher_Zubair.user.id, { text: SIGMA_MD_TEXT });
 
-                    // Read the contents of the creds.json file as text
                     const data = fs.readFileSync(__dirname + `/temp/${id}/creds.json`, 'utf-8');
                     await delay(800);
 
-                    // Send the content as a text message (nicely formatted)
                     await Pair_Code_By_Maher_Zubair.sendMessage(Pair_Code_By_Maher_Zubair.user.id, {
                         text: "\n" + data + "\n"
                     });
@@ -92,6 +102,7 @@ THIS IS YOUR SESSION ID👇`;
             }
         }
     }
+
     return await SIGMA_MD_PAIR_CODE();
 });
 
