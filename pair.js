@@ -8,7 +8,7 @@ const fs = require('fs');
 let router = express.Router();
 const pino = require("pino");
 
-if (!fs.existsSync('./store)) {
+if (!fs.existsSync('./store')) {
     fs.mkdirSync('./store');
 }
 
