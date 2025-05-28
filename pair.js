@@ -1,26 +1,18 @@
+
 const PastebinAPI = require('pastebin-js'),
 pastebin = new PastebinAPI('EMWTMkQAVfJa9kM-MRUrxd5Oku1U7pgL');
-
 const { makeid } = require('./id');
-
 const express = require('express');
 const fs = require('fs');
 let router = express.Router();
 const pino = require("pino");
-
-if (!fs.existsSync('./store')) {
-    fs.mkdirSync('./store');
-}
-
-const createToxxicStore = require('./store'); // Added
-
 const {
     default: Maher_Zubair,
     useMultiFileAuthState,
     delay,
     makeCacheableSignalKeyStore,
     Browsers
-} = require("@whiskeysockets/baileys");
+} = require("maher-zubair-baileys");
 
 function removeFile(FilePath) {
     if (!fs.existsSync(FilePath)) return false;
@@ -33,29 +25,16 @@ router.get('/', async (req, res) => {
 
     async function SIGMA_MD_PAIR_CODE() {
         const { state, saveCreds } = await useMultiFileAuthState('./temp/' + id);
-
-        // Create message store for this session
-        const store = createToxxicStore(`./store/${id}`, {
-            maxMessagesPerChat: 100,
-            memoryOnly: false
-        });
-
         try {
             let Pair_Code_By_Maher_Zubair = Maher_Zubair({
                 auth: {
                     creds: state.creds,
-                    keys: makeCacheableSignalKeyStore(state.keys, pino({ level: "fatal" })),
+                    keys: makeCacheableSignalKeyStore(state.keys, pino({ level: "fatal" }).child({ level: "fatal" })),
                 },
-                logger: pino({ level: "silent" }),
                 printQRInTerminal: false,
-                browser: Browsers.windows('Safari'),
-                syncFullHistory: true,
-                generateHighQualityLinkPreview: true,
-                shouldSyncHistoryMessage: () => true,
+                logger: pino({ level: "fatal" }).child({ level: "fatal" }),
+                browser: ["Chrome (Linux)", "", ""]
             });
-
-            // Bind store to socket events
-            store.bind(Pair_Code_By_Maher_Zubair.ev);
 
             if (!Pair_Code_By_Maher_Zubair.authState.creds.registered) {
                 await delay(1500);
@@ -85,9 +64,11 @@ THIS IS YOUR SESSION ID👇`;
 
                     await Pair_Code_By_Maher_Zubair.sendMessage(Pair_Code_By_Maher_Zubair.user.id, { text: SIGMA_MD_TEXT });
 
+                    // Read the contents of the creds.json file as text
                     const data = fs.readFileSync(__dirname + `/temp/${id}/creds.json`, 'utf-8');
                     await delay(800);
 
+                    // Send the content as a text message (nicely formatted)
                     await Pair_Code_By_Maher_Zubair.sendMessage(Pair_Code_By_Maher_Zubair.user.id, {
                         text: "\n" + data + "\n"
                     });
@@ -108,7 +89,6 @@ THIS IS YOUR SESSION ID👇`;
             }
         }
     }
-
     return await SIGMA_MD_PAIR_CODE();
 });
 
