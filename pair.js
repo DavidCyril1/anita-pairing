@@ -403,10 +403,6 @@ const cleanup = () => {
 process.on('SIGINT', cleanup);
 process.on('SIGTERM', cleanup);
 
-// Start server
-server.listen(PORT, () => {
-    console.log(`WhatsApp Session Generator running on port ${PORT}`);
-    console.log(`Health check: http://localhost:${PORT}/api/health`);
-});
+
 
 module.exports = app;
