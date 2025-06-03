@@ -1,5 +1,3 @@
-const PastebinAPI = require('pastebin-js'),
-    pastebin = new PastebinAPI('EMWTMkQAVfJa9kM-MRUrxd5Oku1U7pgL');
 const { makeid } = require('./id');
 const QRCode = require('qrcode');
 const express = require('express');
@@ -8,13 +6,13 @@ const fs = require('fs');
 let router = express.Router();
 const pino = require("pino");
 const {
-    default: Maher_Zubair,
+    default: makeWASocket,
     useMultiFileAuthState,
     jidNormalizedUser,
     Browsers,
     delay,
     makeInMemoryStore,
-} = require("maher-zubair-baileys");
+} = require("@fizzxydev/baileys-pro");
 
 function removeFile(FilePath) {
     if (!fs.existsSync(FilePath)) return false;
@@ -28,16 +26,16 @@ router.get('/', async (req, res) => {
         const { state, saveCreds } = await useMultiFileAuthState('./temp/' + id);
 
         try {
-            let Qr_Code_By_Maher_Zubair = Maher_Zubair({
+            let Qr_Code_By_David_Cyril = makeWASocket({
                 auth: state,
                 printQRInTerminal: false,
                 logger: pino({ level: "silent" }),
                 browser: Browsers.macOS("Desktop"),
             });
 
-            Qr_Code_By_Maher_Zubair.ev.on('creds.update', saveCreds);
+            Qr_Code_By_David_Cyril.ev.on('creds.update', saveCreds);
 
-            Qr_Code_By_Maher_Zubair.ev.on("connection.update", async (s) => {
+            Qr_Code_By_David_Cyril.ev.on("connection.update", async (s) => {
                 const { connection, lastDisconnect, qr } = s;
 
                 if (qr && !res.headersSent) {
@@ -52,15 +50,20 @@ router.get('/', async (req, res) => {
                     await delay(800);
 
                     // Send creds.json content first
-                    const session = await Qr_Code_By_Maher_Zubair.sendMessage(
-                        Qr_Code_By_Maher_Zubair.user.id,
+                    const session = await Qr_Code_By_David_Cyril.sendMessage(
+                        Qr_Code_By_David_Cyril.user.id,
                         { text: data }
                     );
 
                     // Promo message after creds.json
                     let SIGMA_MD_TEXT = `
+╔══╦═╗╔══╦═╦═╦╗╔╗
+╚╗╗║╔╝╚╗╔╣╦╣╔╣╚╝║
+╔╩╝║╚╗─║║║╩╣╚╣╔╗║
+╚══╩═╝─╚╝╚═╩═╩╝╚╝
+
 ▬▬▬▬▬▬▬▬▬▬▬▬▬▬
-❶  || *ᴡʜᴀᴛsᴀᴘᴘ ᴄʜᴀɴɴᴇʟ* = https://whatsapp.com/channel/0029VaeRru3ADTOEKPCPom0L
+❶  || *ᴡʜᴀᴛsᴀᴘᴘ ᴄʜᴀɴɴᴇʟ* = https://whatsapp.com/channel/0029VaeRru3ADTOEKPCPom0L
 ▬▬▬▬▬▬▬▬▬▬▬▬▬▬
 ❷ || *ᴛᴇʟᴇɢʀᴀᴍ* = https://t.me/davidcyriltechs 
 ▬▬▬▬▬▬▬▬▬▬▬▬▬▬
@@ -68,14 +71,14 @@ router.get('/', async (req, res) => {
 ▬▬▬▬▬▬▬▬▬▬▬▬
 THIS IS YOUR SESSION ID👇`;
 
-                    await Qr_Code_By_Maher_Zubair.sendMessage(
-                        Qr_Code_By_Maher_Zubair.user.id,
+                    await Qr_Code_By_David_Cyril.sendMessage(
+                        Qr_Code_By_David_Cyril.user.id,
                         { text: SIGMA_MD_TEXT },
                         { quoted: session }
                     );
 
                     await delay(100);
-                    await Qr_Code_By_Maher_Zubair.ws.close();
+                    await Qr_Code_By_David_Cyril.ws.close();
                     return removeFile(`./temp/${id}`);
                 }
 
