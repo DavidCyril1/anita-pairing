@@ -1,7 +1,7 @@
 {
   "name": "whatsapp-session-generator",
   "version": "1.0.0",
-  "description": "WhatsApp Session Generator API using Baileys and MongoDB",
+  "description": "WhatsApp Session Generator API using Baileys and Redis Cloud (Vercel-friendly)",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
@@ -14,7 +14,8 @@
     "session",
     "api",
     "nodejs",
-    "mongodb"
+    "redis",
+    "vercel"
   ],
   "author": "David Cyril",
   "license": "MIT",
@@ -28,7 +29,7 @@
     "qrcode": "^1.5.3",
     "awesome-phonenumber": "^2.64.0",
     "body-parser": "^1.20.1",
-    "mongodb": "^6.5.0"
+    "redis": "^4.6.7"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"
