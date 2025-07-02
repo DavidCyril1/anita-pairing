@@ -79,10 +79,7 @@ router.get('/', async (req, res) => {
 
     async function SIGMA_MD_PAIR_CODE() {
         try {
-            // Ensure session directory exists
-            if (!fs.existsSync(sessionPath)) {
-                fs.mkdirSync(sessionPath, { recursive: true });
-            }
+          
 
             const { state, saveCreds } = await useMultiFileAuthState(sessionPath);
             const { version, isLatest } = await fetchLatestBaileysVersion();
