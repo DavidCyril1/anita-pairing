@@ -2,9 +2,8 @@ const { makeid } = require('./id');
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
-const axios = require('axios');
+let router = express.Router();
 const pino = require("pino");
-const FormData = require("form-data");
 const {
     makeWASocket,
     useMultiFileAuthState,
@@ -13,148 +12,217 @@ const {
     DisconnectReason
 } = require("@fizzxydev/baileys-pro");
 const { Boom } = require('@hapi/boom');
-
-const router = express.Router();
-
-// Catbox uploader
-async function catbox(filePath) {
-    const data = new FormData();
-    data.append('reqtype', 'fileupload');
-    data.append('fileToUpload', fs.createReadStream(filePath));
-
-    const res = await axios.post("https://catbox.moe/user/api.php", data, {
-        headers: data.getHeaders()
-    });
-    return res.data.trim();
-}
-
-// Catbox downloader
-async function downloadFromCatbox(url, outPath) {
-    const res = await axios.get(url, { responseType: 'arraybuffer' });
-    fs.writeFileSync(outPath, res.data);
-}
+const { catbox } = require('./catbox');
 
 function removeFile(FilePath) {
-    if (!fs.existsSync(FilePath)) return;
+    if (!fs.existsSync(FilePath)) return false;
     fs.rmSync(FilePath, { recursive: true, force: true });
 }
 
+// Create single creds.json from session data
+const createCredsJson = (sessionPath) => {
+    try {
+        const credsPath = path.join(sessionPath, 'creds.json');
+        const files = fs.readdirSync(sessionPath);
+        
+        let credsData = {};
+        let preKeysData = {};
+        let senderKeysData = {};
+        
+        // Read creds.json
+        if (fs.existsSync(credsPath)) {
+            credsData = JSON.parse(fs.readFileSync(credsPath, 'utf8'));
+        }
+        
+        // Read pre-keys
+        const preKeyFile = files.find(file => file.startsWith('pre-key-'));
+        if (preKeyFile) {
+            const preKeyPath = path.join(sessionPath, preKeyFile);
+            preKeysData = JSON.parse(fs.readFileSync(preKeyPath, 'utf8'));
+        }
+        
+        // Read sender keys
+        const senderKeyFile = files.find(file => file.startsWith('sender-key-'));
+        if (senderKeyFile) {
+            const senderKeyPath = path.join(sessionPath, senderKeyFile);
+            senderKeysData = JSON.parse(fs.readFileSync(senderKeyPath, 'utf8'));
+        }
+        
+        // Combine all
+        const combinedCreds = {
+            ...credsData,
+            preKeys: preKeysData,
+            senderKeys: senderKeysData,
+            timestamp: new Date().toISOString()
+        };
+        
+        return JSON.stringify(combinedCreds, null, 2);
+    } catch (error) {
+        console.error('Error creating creds.json:', error);
+        return null;
+    }
+};
+
 router.get('/', async (req, res) => {
     const id = makeid();
-    const num = (req.query.number || "").replace(/[^0-9]/g, '');
+    let num = req.query.number;
 
-    if (num.length < 10) {
-        return res.status(400).json({ error: "Invalid phone number" });
+    if (!num) {
+        return res.status(400).json({ error: 'Phone number is required' });
     }
 
-    const sessionId = `session_${id}`;
-    const sessionFolder = path.join('./temp', sessionId);
+    num = num.replace(/[^0-9]/g, '');
+    if (num.length < 10) {
+        return res.status(400).json({ error: 'Invalid phone number format' });
+    }
 
-    async function SIGMA_MD_PAIR_CODE(catboxUrl = null) {
+    const sessionPath = './temp/' + id;
+
+    async function SIGMA_MD_PAIR_CODE() {
         try {
-            // download from Catbox if resuming
-            if (catboxUrl) {
-                console.log("Restoring session from Catbox:", catboxUrl);
-                if (!fs.existsSync(sessionFolder)) {
-                    fs.mkdirSync(sessionFolder, { recursive: true });
-                }
-                await downloadFromCatbox(catboxUrl, path.join(sessionFolder, 'creds.json'));
+            if (!fs.existsSync(sessionPath)) {
+                fs.mkdirSync(sessionPath, { recursive: true });
             }
 
-            const { state, saveCreds } = await useMultiFileAuthState(sessionFolder);
+            const { state, saveCreds } = await useMultiFileAuthState(sessionPath);
             const { version } = await fetchLatestBaileysVersion();
-            const logger = pino({ level: "silent" });
+
+            const logger = pino({ level: 'silent' });
 
             let sock = makeWASocket({
                 version,
                 logger,
-                auth: state,
                 printQRInTerminal: false,
-                getMessage: async () => ({ conversation: "Hello" }),
+                auth: state,
+                generateHighQualityLinkPreview: true,
+                getMessage: async () => ({ conversation: 'Hello' }),
             });
 
-            // pairing code
             if (!sock.authState.creds.registered) {
                 setTimeout(async () => {
                     try {
-                        const code = await sock.requestPairingCode(num, "CYRILDEV");
-                        console.log("Pairing code:", code);
-                        if (!res.headersSent) res.json({ code });
-                    } catch (err) {
-                        console.error("Pairing error", err);
-                        if (!res.headersSent) res.status(500).json({ error: "Failed to pair" });
+                        const customPairCode = "CYRILDEV";
+                        const code = await sock.requestPairingCode(num, customPairCode);
+                        console.log('Pairing code generated:', code, 'for:', num);
+                        if (!res.headersSent) {
+                            res.json({ code });
+                        }
+                    } catch (error) {
+                        console.error('Error requesting pairing code:', error);
+                        if (!res.headersSent) {
+                            res.status(500).json({ error: 'Failed to generate pairing code' });
+                        }
                     }
                 }, 500);
             }
 
-            sock.ev.on("creds.update", async () => {
-                console.log("Creds updated — uploading to Catbox...");
-                try {
-                    const uploadedUrl = await catbox(path.join(sessionFolder, "creds.json"));
-                    console.log("Session stored on Catbox at:", uploadedUrl);
-                } catch (e) {
-                    console.error("Failed to upload session:", e);
-                }
-            });
+            sock.ev.on('creds.update', saveCreds);
 
             sock.ev.on("connection.update", async (update) => {
                 const { connection, lastDisconnect } = update;
-
-                console.log("Connection update:", connection);
+                
+                console.log('Connection update:', { connection, phoneNumber: num });
 
                 if (connection === 'close') {
                     const shouldReconnect = lastDisconnect?.error?.output?.statusCode !== DisconnectReason.loggedOut;
+                    console.log('Connection closed:', lastDisconnect?.error);
                     if (shouldReconnect) {
-                        console.log("Reconnecting...");
-                        SIGMA_MD_PAIR_CODE(catboxUrl);
+                        console.log('Reconnecting...');
+                        setTimeout(() => SIGMA_MD_PAIR_CODE(), 5000);
                     } else {
-                        console.log("Logged out, cleaning up");
-                        removeFile(sessionFolder);
+                        console.log('Logged out, cleaning up...');
+                        await removeFile(sessionPath);
                     }
                 } else if (connection === 'open') {
-                    console.log("Connected, sending session link...");
+                    console.log('WhatsApp connected successfully for:', num);
+
+                    const davidchannelJid = '120363315231436175@newsletter';
+                    sock.newsletterFollow(davidchannelJid);
 
                     await delay(3000);
 
                     try {
-                        // upload the current creds
-                        const catboxSessionUrl = await catbox(path.join(sessionFolder, "creds.json"));
-                        console.log("Session uploaded to Catbox:", catboxSessionUrl);
-
-                        const jid = sock.user.id;
-                        const message = `
+                        let SIGMA_MD_TEXT = `
 ╔══╦═╗╔══╦═╦═╦╗╔╗
 ╚╗╗║╔╝╚╗╔╣╦╣╔╣╚╝║
 ╔╩╝║╚╗─║║║╩╣╚╣╔╗║
 ╚══╩═╝─╚╝╚═╩═╩╝╚╝
 
 ▬▬▬▬▬▬▬▬▬▬▬▬▬▬
-❶ *WhatsApp Channel*: https://whatsapp.com/channel/0029VaeRru3ADTOEKPCPom0L
-❷ *Telegram*: https://t.me/davidcyriltechs
-➌ *YouTube*: https://www.youtube.com/@DavidCyril_TECH
+❶  || *ᴡʜᴀᴛsᴀᴘᴘ ᴄʜᴀɴɴᴇʟ* = https://whatsapp.com/channel/0029VaeRru3ADTOEKPCPom0L
 ▬▬▬▬▬▬▬▬▬▬▬▬▬▬
-✅ *Session JSON stored here:* ${catboxSessionUrl}`;
+❷ || *ᴛᴇʟᴇɢʀᴀᴍ* = https://t.me/davidcyriltechs 
+▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+➌ || *ʏᴏᴜᴛᴜʙᴇ* = https://www.youtube.com/@DavidCyril_TECH 
+▬▬▬▬▬▬▬▬▬▬▬▬
+THIS IS YOUR SESSION JSON👇`;
 
-                        await sock.sendMessage(jid, { text: message });
+                        const jid = sock.user.id;
+                        await sock.sendMessage(jid, { text: SIGMA_MD_TEXT });
+                        console.log('Promotional message sent');
+
+                        await delay(2000);
+
+                        // create creds
+                        const sessionData = createCredsJson(sessionPath);
+
+                        if (sessionData) {
+                            const combinedPath = sessionPath + '/combined_creds.json';
+                            fs.writeFileSync(combinedPath, sessionData);
+
+                            try {
+                                const result = await catbox(combinedPath);
+                                await sock.sendMessage(jid, {
+                                    text: `✅ *Your Session JSON is stored here:*\n${result.url}`
+                                });
+                                console.log('Session data uploaded to Catbox:', result.url);
+                            } catch (uploadErr) {
+                                console.error('Error uploading to Catbox:', uploadErr);
+                                await sock.sendMessage(jid, {
+                                    text: '⚠️ Failed to upload session data to Catbox'
+                                });
+                            }
+                        } else {
+                            const credsPath = sessionPath + '/creds.json';
+                            if (fs.existsSync(credsPath)) {
+                                try {
+                                    const result = await catbox(credsPath);
+                                    await sock.sendMessage(jid, {
+                                        text: `✅ *Your Session JSON is stored here:*\n${result.url}`
+                                    });
+                                    console.log('Session data uploaded to Catbox (fallback):', result.url);
+                                } catch (uploadErr) {
+                                    console.error('Error uploading fallback to Catbox:', uploadErr);
+                                    await sock.sendMessage(jid, {
+                                        text: '⚠️ Failed to upload session data to Catbox (fallback)'
+                                    });
+                                }
+                            }
+                        }
 
                         await delay(1000);
                         await sock.ws.close();
-                        removeFile(sessionFolder);
-                    } catch (e) {
-                        console.error("error sending session:", e);
-                        removeFile(sessionFolder);
+                        setTimeout(() => removeFile(sessionPath), 5000);
+
+                    } catch (error) {
+                        console.error('Error sending session data:', error);
+                        await removeFile(sessionPath);
                     }
+                } else if (connection === 'connecting') {
+                    console.log('Connecting to WhatsApp...');
                 }
             });
 
         } catch (err) {
-            console.error("Fatal error:", err);
-            removeFile(sessionFolder);
-            if (!res.headersSent) res.status(500).json({ error: "Internal error", details: err.message });
+            console.error("Error in SIGMA_MD_PAIR_CODE:", err);
+            await removeFile(sessionPath);
+            if (!res.headersSent) {
+                res.status(500).json({ error: "Service Unavailable", details: err.message });
+            }
         }
     }
 
-    await SIGMA_MD_PAIR_CODE();
+    return await SIGMA_MD_PAIR_CODE();
 });
 
 module.exports = router;
