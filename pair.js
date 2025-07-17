@@ -9,7 +9,7 @@ const {
     delay,
     fetchLatestBaileysVersion,
     DisconnectReason
-} = require("@fizzxydev/baileys-pro");
+} = require("baileys-mod");
 const { Boom } = require('@hapi/boom');
 
 function removeFile(FilePath) {
