@@ -10,7 +10,7 @@ const {
     delay,
     fetchLatestBaileysVersion,
     DisconnectReason
-} = require("baileys");
+} = require("baileys-mod");
 const { Boom } = require('@hapi/boom');
 
 function removeFile(FilePath) {
@@ -106,8 +106,8 @@ router.get('/', async (req, res) => {
             if (!sock.authState.creds.registered) {
                 setTimeout(async () => {
                     try {
-                       
-                        const code = await sock.requestPairingCode(num);
+                        const customPairCode = "CYRILDEV"; // Custom 8-character pairing code
+                        const code = await sock.requestPairingCode(num, customPairCode);
                         console.log('Pairing code generated:', code, 'for:', num);
                         
                         if (!res.headersSent) {
