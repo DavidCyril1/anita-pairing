@@ -12,7 +12,7 @@ const {
     Browsers,
     delay,
     makeInMemoryStore,
-} = require("baileys-mod");
+} = require("baileys");
 
 function removeFile(FilePath) {
     if (!fs.existsSync(FilePath)) return false;
