@@ -145,9 +145,7 @@ router.get('/', async (req, res) => {
                 } else if (connection === 'open') {
                     console.log('WhatsApp connected successfully for:', num);
 
-                    const davidchannelJid = '120363315231436175@newsletter';
-      
-sock.newsletterFollow(davidchannelJid);
+                   
                     
                     // Wait for session to stabilize
                     await delay(3000);
