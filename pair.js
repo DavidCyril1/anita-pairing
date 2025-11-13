@@ -102,25 +102,30 @@ router.get('/', async (req, res) => {
                 },
             });
 
-            // Handle pairing code request
-            if (!sock.authState.creds.registered) {
-                setTimeout(async () => {
-                    try {
-                        const customPairCode = "CYRILDEV"; // Custom 8-character pairing code
-                        const code = await sock.requestPairingCode(num, customPairCode);
-                        console.log('Pairing code generated:', code, 'for:', num);
-                        
-                        if (!res.headersSent) {
-                            res.json({ code });
-                        }
-                    } catch (error) {
-                        console.error('Error requesting pairing code:', error);
-                        if (!res.headersSent) {
-                            res.status(500).json({ error: 'Failed to generate pairing code' });
-                        }
-                    }
-                }, 500);
+          // Handle pairing code request
+if (!sock.authState.creds.registered) {
+    setTimeout(async () => {
+        try {
+            // ❌ Removed custom pair code
+            // const customPairCode = "CYRILDEV";
+
+            // ✅ Request normal Baileys pairing code
+            const code = await sock.requestPairingCode(num);
+
+            console.log('Pairing code generated:', code, 'for:', num);
+
+            if (!res.headersSent) {
+                res.json({ code });
             }
+        } catch (error) {
+            console.error('Error requesting pairing code:', error);
+            if (!res.headersSent) {
+                res.status(500).json({ error: 'Failed to generate pairing code' });
+            }
+        }
+    }, 500);
+}
+
 
             // Handle credentials update
             sock.ev.on('creds.update', saveCreds);
