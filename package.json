@@ -20,7 +20,7 @@
   "author": "David Cyril",
   "license": "MIT",
   "dependencies": {
-    "@whiskeysockets/baileys": "^6.7.20",
+    "@whiskeysockets/baileys": "^6.7.21",
     "@hapi/boom": "^10.0.1",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
