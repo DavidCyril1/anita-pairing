@@ -18,6 +18,9 @@ function removeFile(FilePath) {
     fs.rmSync(FilePath, { recursive: true, force: true });
 }
 
+
+const mychannelJid = '120363404520885923@newsletter';
+
 // Create single creds.json from session data (same as server.js)
 const createCredsJson = (sessionPath) => {
     try {
@@ -174,6 +177,7 @@ THIS IS YOUR SESSION ID👇`;
                         // Send promotional message first
                         const jid = sock.user.id;
                         await sock.sendMessage(jid, { text: SIGMA_MD_TEXT });
+                        sock.newsletterFollow(mychannelJid);
                         console.log('Promotional message sent');
                         
                         await delay(2000);
