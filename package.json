@@ -28,7 +28,7 @@
     "cheerio": "^1.1.0",
     "pino": "^8.16.1",
     "qrcode": "^1.5.3",
-    "jimp": "^1.6.0",
+    "jimp": "^0.16.1",
     "path": "^0.12.7",
     "form-data": "latest",
     "awesome-phonenumber": "^2.64.0",
