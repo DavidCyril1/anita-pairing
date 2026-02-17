@@ -12,7 +12,7 @@ const {
     Browsers,
     delay,
     makeInMemoryStore,
-} = require("@whiskeysockets/baileys"); // ✅ changed from "baileys-mod" to "@whiskeysockets/baileys"
+} = require("wileys"); // ✅ changed from "baileys-mod" to "@whiskeysockets/baileys"
 
 function removeFile(FilePath) {
     if (!fs.existsSync(FilePath)) return false;
