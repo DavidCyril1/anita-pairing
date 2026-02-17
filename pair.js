@@ -10,7 +10,7 @@ const {
     delay,
     fetchLatestBaileysVersion,
     DisconnectReason
-} = require("@whiskeysockets/baileys"); // ✅ switched from baileys-mod to original baileys
+} = require("wileys"); // ✅ switched from baileys-mod to original baileys
 const { Boom } = require('@hapi/boom');
 
 function removeFile(FilePath) {
