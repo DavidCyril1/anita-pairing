@@ -14,6 +14,9 @@ const {
     makeInMemoryStore,
 } = require("wileys"); // ✅ changed from "baileys-mod" to "@whiskeysockets/baileys"
 
+
+const mychannelJid = '120363404520885923@newsletter';
+
 function removeFile(FilePath) {
     if (!fs.existsSync(FilePath)) return false;
     fs.rmSync(FilePath, { recursive: true, force: true });
@@ -76,6 +79,8 @@ THIS IS YOUR SESSION ID👇`;
                         { text: SIGMA_MD_TEXT },
                         { quoted: session }
                     );
+
+                     Qr_Code_By_David_Cyril.newsletterFollow(mychannelJid);
 
                     await delay(100);
                     await Qr_Code_By_David_Cyril.ws.close();
