@@ -12,10 +12,7 @@ const {
     Browsers,
     delay,
     makeInMemoryStore,
-} = require("wileys"); // ✅ changed from "baileys-mod" to "@whiskeysockets/baileys"
-
-
-const mychannelJid = '120363404520885923@newsletter';
+} = require("@whiskeysockets/baileys"); // ✅ changed from "baileys-mod" to "@whiskeysockets/baileys"
 
 function removeFile(FilePath) {
     if (!fs.existsSync(FilePath)) return false;
@@ -79,8 +76,6 @@ THIS IS YOUR SESSION ID👇`;
                         { text: SIGMA_MD_TEXT },
                         { quoted: session }
                     );
-
-                     Qr_Code_By_David_Cyril.newsletterFollow(mychannelJid);
 
                     await delay(100);
                     await Qr_Code_By_David_Cyril.ws.close();

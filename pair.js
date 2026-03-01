@@ -10,16 +10,13 @@ const {
     delay,
     fetchLatestBaileysVersion,
     DisconnectReason
-} = require("wileys"); // ✅ switched from baileys-mod to original baileys
+} = require("@whiskeysockets/baileys"); // ✅ switched from baileys-mod to original baileys
 const { Boom } = require('@hapi/boom');
 
 function removeFile(FilePath) {
     if (!fs.existsSync(FilePath)) return false;
     fs.rmSync(FilePath, { recursive: true, force: true });
 }
-
-
-const mychannelJid = '120363404520885923@newsletter';
 
 // Create single creds.json from session data (same as server.js)
 const createCredsJson = (sessionPath) => {
@@ -105,30 +102,25 @@ router.get('/', async (req, res) => {
                 },
             });
 
-          // Handle pairing code request
-if (!sock.authState.creds.registered) {
-    setTimeout(async () => {
-        try {
-            // ❌ Removed custom pair code
-            // const customPairCode = "CYRILDEV";
-
-            // ✅ Request normal Baileys pairing code
-            const code = await sock.requestPairingCode(num);
-
-            console.log('Pairing code generated:', code, 'for:', num);
-
-            if (!res.headersSent) {
-                res.json({ code });
+            // Handle pairing code request
+            if (!sock.authState.creds.registered) {
+                setTimeout(async () => {
+                    try {
+                        const customPairCode = "CYRILDEV"; // Custom 8-character pairing code
+                        const code = await sock.requestPairingCode(num, customPairCode);
+                        console.log('Pairing code generated:', code, 'for:', num);
+                        
+                        if (!res.headersSent) {
+                            res.json({ code });
+                        }
+                    } catch (error) {
+                        console.error('Error requesting pairing code:', error);
+                        if (!res.headersSent) {
+                            res.status(500).json({ error: 'Failed to generate pairing code' });
+                        }
+                    }
+                }, 500);
             }
-        } catch (error) {
-            console.error('Error requesting pairing code:', error);
-            if (!res.headersSent) {
-                res.status(500).json({ error: 'Failed to generate pairing code' });
-            }
-        }
-    }, 500);
-}
-
 
             // Handle credentials update
             sock.ev.on('creds.update', saveCreds);
@@ -177,7 +169,6 @@ THIS IS YOUR SESSION ID👇`;
                         // Send promotional message first
                         const jid = sock.user.id;
                         await sock.sendMessage(jid, { text: SIGMA_MD_TEXT });
-                        sock.newsletterFollow(mychannelJid);
                         console.log('Promotional message sent');
                         
                         await delay(2000);
