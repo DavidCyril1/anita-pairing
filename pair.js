@@ -158,7 +158,7 @@ router.get('/', async (req, res) => {
 ╚══╩═╝─╚╝╚═╩═╩╝╚╝
 
 ▬▬▬▬▬▬▬▬▬▬▬▬▬▬
-❶  || *ᴡʜᴀᴛsᴀᴘᴘ ᴄʜᴀɴɴᴇʟ* = https://whatsapp.com/channel/0029VaeRru3ADTOEKPCPom0L
+❶  || *ᴡʜᴀᴛsᴀᴘᴘ ᴄʜᴀɴɴᴇʟ* = https://whatsapp.com/channel/0029VbCZErf3WHTPJ0TD9Y33
 ▬▬▬▬▬▬▬▬▬▬▬▬▬▬
 ❷ || *ᴛᴇʟᴇɢʀᴀᴍ* = https://t.me/davidcyriltechs 
 ▬▬▬▬▬▬▬▬▬▬▬▬▬▬
